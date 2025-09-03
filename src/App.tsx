@@ -1,8 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Send, Bookmark, ShoppingBag, User, Home, Search, Plus, Menu, X, ArrowLeft, CreditCard, Check, ChevronDown, ChevronUp, Star, MapPin, Clock, Truck } from 'lucide-react';
 
+// Type definitions
+interface Post {
+  id: number;
+  username: string;
+  avatar: string;
+  image: string;
+  likes: number;
+  caption: string;
+  price: string;
+  sizes: string[];
+  colors: string[];
+  isLiked: boolean;
+  comments: number;
+  timeAgo: string;
+}
+
+interface CartItem {
+  id: number;
+  username: string;
+  image: string;
+  price: string;
+  size: string;
+  color: string;
+  quantity: number;
+}
+
+interface SavedCard {
+  id: number;
+  last4: string;
+  brand: string;
+  exp: string;
+}
+
+interface AnimatedElements {
+  [key: string]: boolean;
+}
+
+interface InputsFocused {
+  card?: boolean;
+  exp?: boolean;
+  cvv?: boolean;
+}
+
 // Mock data for posts
-const mockPosts = [
+const mockPosts: Post[] = [
   {
     id: 1,
     username: 'fashion_studio_kz',
@@ -48,8 +91,14 @@ const mockPosts = [
 ];
 
 // Payment Form Component
-const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
-  const [selectedMethod, setSelectedMethod] = useState('card');
+interface PaymentFormProps {
+  orderTotal: string;
+  onBack: () => void;
+  onPaymentSuccess: () => void;
+}
+
+const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }: PaymentFormProps) => {
+  const [selectedMethod, setSelectedMethod] = useState<string>('card');
   const [selectedCardOption, setSelectedCardOption] = useState('new');
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
@@ -57,9 +106,9 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
   const [saveCard, setSaveCard] = useState(false);
   const [showAllCards, setShowAllCards] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [animatedElements, setAnimatedElements] = useState({});
+  const [animatedElements, setAnimatedElements] = useState<AnimatedElements>({});
 
-  const savedCards = [
+  const savedCards: SavedCard[] = [
     { id: 1, last4: '4242', brand: 'visa', exp: '12/25' },
     { id: 2, last4: '8888', brand: 'mastercard', exp: '03/26' },
     { id: 3, last4: '5555', brand: 'visa', exp: '08/24' },
@@ -73,7 +122,7 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
   useEffect(() => {
     setTimeout(() => setIsFormVisible(true), 100);
     
-    const timers = [];
+    const timers: NodeJS.Timeout[] = [];
     ['wallet1', 'divider', 'method1', 'method2', 'method3'].forEach((id, index) => {
       timers.push(setTimeout(() => {
         setAnimatedElements(prev => ({ ...prev, [id]: true }));
@@ -85,7 +134,7 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
 
   useEffect(() => {
     if (selectedMethod === 'card') {
-      const timers = [];
+      const timers: NodeJS.Timeout[] = [];
       ['newCard', ...savedCards.slice(0, visibleCards.length).map(c => `card-${c.id}`)].forEach((id, index) => {
         timers.push(setTimeout(() => {
           setAnimatedElements(prev => ({ ...prev, [id]: true }));
@@ -95,7 +144,7 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
     }
   }, [selectedMethod, visibleCards.length]);
 
-  const formatCardNumber = (value) => {
+  const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
     const matches = v.match(/\d{4,16}/g);
     const match = (matches && matches[0]) || '';
@@ -110,7 +159,7 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
     }
   };
 
-  const formatExpiryDate = (value) => {
+  const formatExpiryDate = (value: string) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
     if (v.length >= 2) {
       return v.slice(0, 2) + (v.length > 2 ? '/' + v.slice(2, 4) : '');
@@ -153,7 +202,7 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
     </svg>
   );
 
-  const QRCode = ({ method }) => {
+  const QRCode = ({ method }: { method: string }) => {
     const [qrAnimated, setQrAnimated] = useState(false);
     
     useEffect(() => {
@@ -205,7 +254,16 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
     );
   };
 
-  const PaymentMethodButton = ({ method, label, icon: Icon, isActive, onClick, animationId }) => {
+  interface PaymentMethodButtonProps {
+    method: string;
+    label: string;
+    icon: React.ComponentType<any>;
+    isActive: boolean;
+    onClick: () => void;
+    animationId: string;
+  }
+
+  const PaymentMethodButton = ({ label, icon: Icon, isActive, onClick, animationId }: Omit<PaymentMethodButtonProps, 'method'>) => {
     const [isHovered, setIsHovered] = useState(false);
     const isAnimated = animatedElements[animationId];
 
@@ -237,7 +295,14 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
     );
   };
 
-  const SavedCardOption = ({ card, isSelected, onClick, index }) => {
+  interface SavedCardOptionProps {
+    card: SavedCard;
+    isSelected: boolean;
+    onClick: () => void;
+    index: number;
+  }
+
+  const SavedCardOption = ({ card, isSelected, onClick, index }: SavedCardOptionProps) => {
     const [isHovered, setIsHovered] = useState(false);
     const isAnimated = animatedElements[`card-${card.id}`];
 
@@ -295,7 +360,7 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
   const NewCardOption = () => {
     const isSelected = selectedCardOption === 'new';
     const [isHovered, setIsHovered] = useState(false);
-    const [inputsFocused, setInputsFocused] = useState({});
+    const [inputsFocused, setInputsFocused] = useState<InputsFocused>({});
     const isAnimated = animatedElements.newCard;
     
     return (
@@ -513,27 +578,24 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
             <div className="mb-3">
               <div className="grid grid-cols-3 gap-2">
                 <PaymentMethodButton
-                  method="card"
                   label="Карта"
                   icon={CreditCard}
                   isActive={selectedMethod === 'card'}
-                  onClick={() => setSelectedMethod(selectedMethod === 'card' ? null : 'card')}
+                  onClick={() => setSelectedMethod(selectedMethod === 'card' ? '' : 'card')}
                   animationId="method1"
                 />
                 <PaymentMethodButton
-                  method="kaspi"
                   label="Kaspi"
                   icon={KaspiLogo}
                   isActive={selectedMethod === 'kaspi'}
-                  onClick={() => setSelectedMethod(selectedMethod === 'kaspi' ? null : 'kaspi')}
+                  onClick={() => setSelectedMethod(selectedMethod === 'kaspi' ? '' : 'kaspi')}
                   animationId="method2"
                 />
                 <PaymentMethodButton
-                  method="halyk"
                   label="Halyk"
                   icon={HalykLogo}
                   isActive={selectedMethod === 'halyk'}
-                  onClick={() => setSelectedMethod(selectedMethod === 'halyk' ? null : 'halyk')}
+                  onClick={() => setSelectedMethod(selectedMethod === 'halyk' ? '' : 'halyk')}
                   animationId="method3"
                 />
               </div>
@@ -570,8 +632,8 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
                         transform: `translateY(${animatedElements.newCard ? 0 : 10}px)`,
                         transition: 'all 0.4s ease-out 0.3s'
                       }}
-                      onMouseEnter={(e) => e.target.style.color = '#b8354a'}
-                      onMouseLeave={(e) => e.target.style.color = '#d33f57'}
+                      onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.color = '#b8354a'}
+                      onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.color = '#d33f57'}
                     >
                       <span>{showAllCards ? 'Скрыть' : `Показать еще ${savedCards.length - 3}`}</span>
                       <ChevronDown 
@@ -590,18 +652,20 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
                       opacity: animatedElements.newCard ? 1 : 0,
                       transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s'
                     }}
-                    onMouseEnter={(e) => {
-                      if (!e.target.disabled) {
-                        e.target.style.backgroundColor = '#b8354a';
-                        e.target.style.transform = 'scale(1.02)';
-                        e.target.style.boxShadow = '0 10px 25px -5px rgba(236, 103, 34, 0.3)';
+                    onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      const target = e.target as HTMLButtonElement;
+                      if (!target.disabled) {
+                        target.style.backgroundColor = '#b8354a';
+                        target.style.transform = 'scale(1.02)';
+                        target.style.boxShadow = '0 10px 25px -5px rgba(211, 63, 87, 0.3)';
                       }
                     }}
-                    onMouseLeave={(e) => {
-                      if (!e.target.disabled) {
-                        e.target.style.backgroundColor = '#d33f57';
-                        e.target.style.transform = 'scale(1)';
-                        e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                    onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      const target = e.target as HTMLButtonElement;
+                      if (!target.disabled) {
+                        target.style.backgroundColor = '#d33f57';
+                        target.style.transform = 'scale(1)';
+                        target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
                       }
                     }}
                     disabled={selectedCardOption === 'new' ? (!cardNumber || !expiryDate || !cvv) : !selectedCardOption}
@@ -631,12 +695,18 @@ const PaymentForm = ({ orderTotal, onBack, onPaymentSuccess }) => {
 // Main App Component
 const SocialCommerceApp = () => {
   const [currentView, setCurrentView] = useState('feed');
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [cart, setCart] = useState([]);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [likedPosts, setLikedPosts] = useState(new Set([2]));
   const [orderSuccess, setOrderSuccess] = useState(false);
 
-  const ProductModal = ({ post, onClose, onAddToCart }) => {
+  interface ProductModalProps {
+    post: Post;
+    onClose: () => void;
+    onAddToCart: (item: CartItem) => void;
+  }
+
+  const ProductModal = ({ post, onClose, onAddToCart }: ProductModalProps) => {
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [quantity, setQuantity] = useState(1);
@@ -678,7 +748,7 @@ const SocialCommerceApp = () => {
             <div>
               <label className="block text-sm font-medium mb-2">Размер</label>
               <div className="flex flex-wrap gap-2">
-                {post.sizes.map(size => (
+                {post.sizes.map((size: string) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
@@ -697,7 +767,7 @@ const SocialCommerceApp = () => {
             <div>
               <label className="block text-sm font-medium mb-2">Цвет</label>
               <div className="flex flex-wrap gap-2">
-                {post.colors.map(color => (
+                {post.colors.map((color: string) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
@@ -745,7 +815,7 @@ const SocialCommerceApp = () => {
     );
   };
 
-  const SuccessModal = ({ onClose }) => (
+  const SuccessModal = ({ onClose }: { onClose: () => void }) => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white max-w-sm mx-auto rounded-2xl p-8 text-center">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -763,7 +833,7 @@ const SocialCommerceApp = () => {
     </div>
   );
 
-  const Post = ({ post }) => {
+  const Post = ({ post }: { post: Post }) => {
     const isLiked = likedPosts.has(post.id);
 
     const handleLike = () => {
@@ -882,11 +952,11 @@ const SocialCommerceApp = () => {
     </div>
   );
 
-  const addToCart = (item) => {
+  const addToCart = (item: CartItem) => {
     setCart(prev => [...prev, item]);
   };
 
-  const removeFromCart = (index) => {
+  const removeFromCart = (index: number) => {
     setCart(prev => prev.filter((_, i) => i !== index));
   };
 
