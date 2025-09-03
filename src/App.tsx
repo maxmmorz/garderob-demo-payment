@@ -112,14 +112,18 @@ const mockPosts: Post[] = [
 // Payment Form Component
 interface PaymentFormProps {
   orderTotal: string;
+  cart: CartItem[];
   onBack: () => void;
   onPaymentSuccess: () => void;
+  onRemoveFromCart: (index: number) => void;
 }
 
 const PaymentForm = ({
   orderTotal,
+  cart,
   onBack,
   onPaymentSuccess,
+  onRemoveFromCart,
 }: PaymentFormProps) => {
   const [selectedMethod, setSelectedMethod] = useState<string>("card");
   const [selectedCardOption, setSelectedCardOption] = useState("new");
@@ -696,11 +700,51 @@ const PaymentForm = ({
           </div>
 
           <div className="p-4 border-b bg-gray-50">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
               <span className="text-gray-600">К оплате:</span>
               <span className="text-xl font-bold text-[#d33f57]">
                 {orderTotal}
               </span>
+            </div>
+            
+            {/* Cart Items */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Товары ({cart.length})</h3>
+              {cart.length === 0 ? (
+                <div className="text-center py-8 bg-white rounded-lg">
+                  <ShoppingBag className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+                  <p className="text-gray-500 text-sm mb-3">Ваша корзина пуста</p>
+                  <button
+                    onClick={onBack}
+                    className="text-[#d33f57] text-sm font-medium hover:text-[#b8354a] transition-colors"
+                  >
+                    Продолжить покупки
+                  </button>
+                </div>
+              ) : (
+                cart.map((item, index) => (
+                  <div key={index} className="flex items-center space-x-3 bg-white p-3 rounded-lg">
+                    <img
+                      src={item.image}
+                      alt=""
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm text-gray-900 truncate">@{item.username}</p>
+                      <p className="text-xs text-gray-500">
+                        {item.size} • {item.color} • ×{item.quantity}
+                      </p>
+                      <p className="text-sm font-bold text-[#d33f57]">{item.price}</p>
+                    </div>
+                    <button
+                      onClick={() => onRemoveFromCart(index)}
+                      className="p-1 hover:bg-gray-100 rounded flex-shrink-0"
+                    >
+                      <X className="w-4 h-4 text-gray-400" />
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -1164,9 +1208,9 @@ const SocialCommerceApp = () => {
           <Plus className="w-6 h-6" />
         </button>
         <button
-          onClick={() => setCurrentView("cart")}
+          onClick={() => setCurrentView("payment")}
           className={`p-3 relative ${
-            currentView === "cart" ? "text-[#d33f57]" : "text-gray-400"
+            currentView === "payment" ? "text-[#d33f57]" : "text-gray-400"
           }`}
         >
           <ShoppingBag className="w-6 h-6" />
@@ -1203,9 +1247,6 @@ const SocialCommerceApp = () => {
     }, 0);
   };
 
-  const handleCheckout = () => {
-    setCurrentView("payment");
-  };
 
   const handlePaymentSuccess = () => {
     setCart([]);
@@ -1222,7 +1263,7 @@ const SocialCommerceApp = () => {
           </h1>
           <div className="flex items-center space-x-3">
             <button
-              onClick={() => setCurrentView("cart")}
+              onClick={() => setCurrentView("payment")}
               className="relative p-2"
             >
               <ShoppingBag className="w-6 h-6" />
@@ -1276,64 +1317,6 @@ const SocialCommerceApp = () => {
           </div>
         )}
 
-        {currentView === "cart" && (
-          <div className="p-4">
-            <h2 className="text-xl font-bold mb-4">Корзина ({cart.length})</h2>
-            {cart.length === 0 ? (
-              <div className="text-center py-12">
-                <ShoppingBag className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500">Ваша корзина пуста</p>
-              </div>
-            ) : (
-              <>
-                <div className="space-y-3 mb-6">
-                  {cart.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center space-x-3 p-3 bg-white rounded-lg"
-                    >
-                      <img
-                        src={item.image}
-                        alt=""
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">@{item.username}</p>
-                        <p className="text-xs text-gray-600">
-                          {item.size} • {item.color}
-                        </p>
-                        <p className="text-[#d33f57] font-bold">{item.price}</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm">×{item.quantity}</span>
-                        <button
-                          onClick={() => removeFromCart(index)}
-                          className="p-1 hover:bg-gray-100 rounded"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="font-medium">Итого:</span>
-                    <span className="text-xl font-bold text-[#d33f57]">
-                      ₸{calculateTotal().toLocaleString()}
-                    </span>
-                  </div>
-                  <button
-                    onClick={handleCheckout}
-                    className="w-full bg-[#d33f57] text-white py-3 rounded-xl font-medium hover:bg-[#b8354a] transition-colors"
-                  >
-                    Перейти к оплате
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
 
         {currentView === "profile" && (
           <div className="p-4 text-center">
@@ -1363,8 +1346,10 @@ const SocialCommerceApp = () => {
       {currentView === "payment" && (
         <PaymentForm
           orderTotal={`₸${calculateTotal().toLocaleString()}`}
-          onBack={() => setCurrentView("cart")}
+          cart={cart}
+          onBack={() => setCurrentView("feed")}
           onPaymentSuccess={handlePaymentSuccess}
+          onRemoveFromCart={removeFromCart}
         />
       )}
 
