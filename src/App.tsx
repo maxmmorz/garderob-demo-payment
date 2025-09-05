@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
+import Layout from "./components/Layout";
 import {
   Heart,
   MessageCircle,
   Send,
   Bookmark,
   ShoppingBag,
-  User,
-  Home,
-  Search,
   Plus,
   Menu,
   X,
-  ArrowLeft,
   CreditCard,
   Check,
   ChevronDown,
@@ -308,8 +305,7 @@ const PaymentForm = ({
               {method === "kaspi" ? "Kaspi.kz" : "Halyk Bank"}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              {method === "kaspi" ? "Kaspi.kz" : "Halyk Bank"} application will
-              be opened
+              Откроется приложение {method === "kaspi" ? "Kaspi.kz" : "Halyk Bank"}
             </p>
           </div>
         </div>
@@ -321,8 +317,8 @@ const PaymentForm = ({
             transition: "all 0.4s ease-out 0.3s",
           }}
         >
-          Complete payment in the{" "}
-          {method === "kaspi" ? "Kaspi.kz" : "Halyk Bank"} app
+          Завершите оплату в приложении{" "}
+          {method === "kaspi" ? "Kaspi.kz" : "Halyk Bank"}
         </p>
       </div>
     );
@@ -406,17 +402,18 @@ const PaymentForm = ({
         className="w-full p-3 rounded-xl border"
         style={{
           borderColor: isSelected ? "#d33f57" : "#E5E7EB",
+          borderWidth: isSelected ? "2px" : "1px",
           backgroundColor: isSelected
             ? "#fdf2f3"
             : isHovered
             ? "#FAFAFA"
             : "#FFFFFF",
           transform: `translateX(${isAnimated ? 0 : 30}px) scale(${
-            isHovered ? 1.01 : 1
+            isHovered ? 1.01 : isSelected ? 1.02 : 1
           })`,
           opacity: isAnimated ? 1 : 0,
           boxShadow: isSelected
-            ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+            ? "0 6px 12px -2px rgba(211, 63, 87, 0.15)"
             : isHovered
             ? "0 1px 3px 0 rgba(0, 0, 0, 0.1)"
             : "none",
@@ -445,25 +442,6 @@ const PaymentForm = ({
               <span className="text-gray-500">{card.exp}</span>
             </div>
           </div>
-          <div
-            className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-            style={{
-              borderColor: isSelected ? "#d33f57" : "#D1D5DB",
-              backgroundColor: isSelected ? "#d33f57" : "transparent",
-              transform: `scale(${isSelected ? 1 : 0.9})`,
-              transition: "all 0.3s ease-out",
-            }}
-          >
-            {isSelected && (
-              <Check
-                className="w-2.5 h-2.5 text-white"
-                style={{
-                  transform: "scale(1)",
-                  animation: "checkPop 0.3s ease-out",
-                }}
-              />
-            )}
-          </div>
         </div>
       </button>
     );
@@ -491,14 +469,15 @@ const PaymentForm = ({
           className="w-full p-4 rounded-xl border"
           style={{
             borderColor: isSelected ? "#d33f57" : "#E5E7EB",
+            borderWidth: isSelected ? "2px" : "1px",
             backgroundColor: isSelected
               ? "#fdf2f3"
               : isHovered
               ? "#FAFAFA"
               : "#FFFFFF",
-            transform: `scale(${isHovered ? 1.01 : 1})`,
+            transform: `scale(${isHovered ? 1.01 : isSelected ? 1.02 : 1})`,
             boxShadow: isSelected
-              ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+              ? "0 6px 12px -2px rgba(211, 63, 87, 0.15)"
               : isHovered
               ? "0 1px 3px 0 rgba(0, 0, 0, 0.1)"
               : "none",
@@ -608,17 +587,6 @@ const PaymentForm = ({
                 </div>
               )}
             </div>
-            <div
-              className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ml-2"
-              style={{
-                borderColor: isSelected ? "#d33f57" : "#D1D5DB",
-                backgroundColor: isSelected ? "#d33f57" : "transparent",
-                transform: `scale(${isSelected ? 1 : 0.9})`,
-                transition: "all 0.3s ease-out",
-              }}
-            >
-              {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
-            </div>
           </div>
         </button>
 
@@ -686,19 +654,8 @@ const PaymentForm = ({
           100% { transform: scale(1) rotate(0deg); }
         }
       `}</style>
-      <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
-        <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between p-4 border-b">
-            <button
-              onClick={onBack}
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className="text-lg font-semibold">Оплата</h1>
-            <div className="w-9" />
-          </div>
-
+      <div className="h-full bg-white flex flex-col">
+        <div className="flex-1 overflow-y-auto">
           <div className="p-4 border-b bg-gray-50">
             <div className="flex justify-between items-center mb-4">
               <span className="text-gray-600">К оплате:</span>
@@ -883,54 +840,6 @@ const PaymentForm = ({
                     </button>
                   )}
 
-                  <button
-                    onClick={handlePayment}
-                    className="w-full mt-3 text-white py-3 rounded-xl font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-                    style={{
-                      backgroundColor: "#d33f57",
-                      transform: `scale(${
-                        animatedElements.newCard ? 1 : 0.95
-                      })`,
-                      opacity: animatedElements.newCard ? 1 : 0,
-                      transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s",
-                    }}
-                    onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                      const target = e.target as HTMLButtonElement;
-                      if (!target.disabled) {
-                        target.style.backgroundColor = "#b8354a";
-                        target.style.transform = "scale(1.02)";
-                        target.style.boxShadow =
-                          "0 10px 25px -5px rgba(211, 63, 87, 0.3)";
-                      }
-                    }}
-                    onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                      const target = e.target as HTMLButtonElement;
-                      if (!target.disabled) {
-                        target.style.backgroundColor = "#d33f57";
-                        target.style.transform = "scale(1)";
-                        target.style.boxShadow =
-                          "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
-                      }
-                    }}
-                    disabled={
-                      selectedCardOption === "new"
-                        ? !cardNumber || !expiryDate || !cvv
-                        : !selectedCardOption
-                    }
-                  >
-                    <span
-                      style={{
-                        display: "inline-block",
-                        transform: animatedElements.newCard
-                          ? "translateY(0)"
-                          : "translateY(5px)",
-                        opacity: animatedElements.newCard ? 1 : 0,
-                        transition: "all 0.3s ease-out 0.5s",
-                      }}
-                    >
-                      Оплатить {orderTotal}
-                    </span>
-                  </button>
                 </div>
               )}
 
@@ -939,16 +848,72 @@ const PaymentForm = ({
             </div>
           </div>
         </div>
+        
+        {/* Sticky Footer with Payment Button */}
+        <div className="border-t bg-white p-4">
+          <button
+            onClick={handlePayment}
+            className="w-full text-white py-3 rounded-xl font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            style={{
+              backgroundColor: "#d33f57",
+              transform: `scale(${
+                animatedElements.newCard ? 1 : 0.95
+              })`,
+              opacity: animatedElements.newCard ? 1 : 0,
+              transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s",
+            }}
+            onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+              const target = e.target as HTMLButtonElement;
+              if (!target.disabled) {
+                target.style.backgroundColor = "#b8354a";
+                target.style.transform = "scale(1.02)";
+                target.style.boxShadow =
+                  "0 10px 25px -5px rgba(211, 63, 87, 0.3)";
+              }
+            }}
+            onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+              const target = e.target as HTMLButtonElement;
+              if (!target.disabled) {
+                target.style.backgroundColor = "#d33f57";
+                target.style.transform = "scale(1)";
+                target.style.boxShadow =
+                  "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
+              }
+            }}
+            disabled={
+              selectedCardOption === "new"
+                ? !cardNumber || !expiryDate || !cvv
+                : !selectedCardOption
+            }
+          >
+            <span
+              style={{
+                display: "inline-block",
+                transform: animatedElements.newCard
+                  ? "translateY(0)"
+                  : "translateY(5px)",
+                opacity: animatedElements.newCard ? 1 : 0,
+                transition: "all 0.3s ease-out 0.5s",
+              }}
+            >
+              Оплатить {orderTotal}
+            </span>
+          </button>
+        </div>
       </div>
     </>
   );
 };
 
-// Main App Component
-const SocialCommerceApp = () => {
-  const [currentView, setCurrentView] = useState("feed");
+// Screen Components  
+interface MainScreenProps {
+  cart: CartItem[];
+  onCartUpdate: (cart: CartItem[]) => void;
+  onViewChange: (view: string) => void;
+}
+
+const MainScreen = ({ cart, onCartUpdate }: MainScreenProps) => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [likedPosts, setLikedPosts] = useState(new Set([2]));
   const [orderSuccess, setOrderSuccess] = useState(false);
 
@@ -981,8 +946,8 @@ const SocialCommerceApp = () => {
     };
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
-        <div className="bg-white w-full max-w-md mx-auto rounded-t-3xl p-6 transform transition-transform duration-300 translate-y-0">
+      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end z-50">
+        <div className="bg-white w-full rounded-t-3xl p-6 transform transition-transform duration-300 translate-y-0">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Детали товара</h2>
             <button
@@ -1182,62 +1147,50 @@ const SocialCommerceApp = () => {
     );
   };
 
-  const NavigationBar = () => (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-40">
-      <div className="max-w-md mx-auto flex items-center justify-around">
-        <button
-          onClick={() => setCurrentView("feed")}
-          className={`p-3 ${
-            currentView === "feed" ? "text-[#d33f57]" : "text-gray-400"
-          }`}
-        >
-          <Home className="w-6 h-6" />
-        </button>
-        <button
-          onClick={() => setCurrentView("search")}
-          className={`p-3 ${
-            currentView === "search" ? "text-[#d33f57]" : "text-gray-400"
-          }`}
-        >
-          <Search className="w-6 h-6" />
-        </button>
-        <button
-          onClick={() => setCurrentView("add")}
-          className="p-3 text-gray-400"
-        >
-          <Plus className="w-6 h-6" />
-        </button>
-        <button
-          onClick={() => setCurrentView("payment")}
-          className={`p-3 relative ${
-            currentView === "payment" ? "text-[#d33f57]" : "text-gray-400"
-          }`}
-        >
-          <ShoppingBag className="w-6 h-6" />
-          {cart.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {cart.length}
-            </span>
-          )}
-        </button>
-        <button
-          onClick={() => setCurrentView("profile")}
-          className={`p-3 ${
-            currentView === "profile" ? "text-[#d33f57]" : "text-gray-400"
-          }`}
-        >
-          <User className="w-6 h-6" />
-        </button>
-      </div>
-    </div>
-  );
 
   const addToCart = (item: CartItem) => {
-    setCart((prev) => [...prev, item]);
+    const updatedCart = [...cart, item];
+    onCartUpdate(updatedCart);
+  };
+
+  return (
+    <>
+      <div className="space-y-0">
+        {mockPosts.map((post) => (
+          <Post key={post.id} post={post} />
+        ))}
+      </div>
+
+      {selectedPost && (
+        <ProductModal
+          post={selectedPost}
+          onClose={() => setSelectedPost(null)}
+          onAddToCart={addToCart}
+        />
+      )}
+
+      {orderSuccess && <SuccessModal onClose={() => setOrderSuccess(false)} />}
+    </>
+  );
+};
+
+// Main App Component
+const SocialCommerceApp = () => {
+  const [currentView, setCurrentView] = useState("feed");
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+
+  const handleCartUpdate = (newCart: CartItem[]) => {
+    setCart(newCart);
+  };
+
+  const handleViewChange = (view: string) => {
+    setCurrentView(view);
   };
 
   const removeFromCart = (index: number) => {
-    setCart((prev) => prev.filter((_, i) => i !== index));
+    const updatedCart = cart.filter((_, i) => i !== index);
+    setCart(updatedCart);
   };
 
   const calculateTotal = () => {
@@ -1247,49 +1200,25 @@ const SocialCommerceApp = () => {
     }, 0);
   };
 
-
   const handlePaymentSuccess = () => {
     setCart([]);
     setCurrentView("feed");
     setOrderSuccess(true);
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200 px-4 py-3 fixed top-0 left-0 right-0 z-30">
-        <div className="max-w-md mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-pink-500 to-[#d33f57] bg-clip-text text-transparent">
-            Garderob
-          </h1>
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setCurrentView("payment")}
-              className="relative p-2"
-            >
-              <ShoppingBag className="w-6 h-6" />
-              {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cart.length}
-                </span>
-              )}
-            </button>
-            <button className="p-2">
-              <MessageCircle className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="pt-16 pb-20 max-w-md mx-auto">
-        {currentView === "feed" && (
-          <div className="space-y-0">
-            {mockPosts.map((post) => (
-              <Post key={post.id} post={post} />
-            ))}
-          </div>
-        )}
-
-        {currentView === "search" && (
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case "feed":
+        return (
+          <MainScreen 
+            cart={cart} 
+            onCartUpdate={handleCartUpdate} 
+            onViewChange={handleViewChange} 
+          />
+        );
+      
+      case "search":
+        return (
           <div className="p-4">
             <div className="mb-4">
               <input
@@ -1315,10 +1244,37 @@ const SocialCommerceApp = () => {
               ))}
             </div>
           </div>
-        )}
+        );
 
+      case "add":
+        return (
+          <div className="p-4 text-center">
+            <div className="w-24 h-24 bg-gradient-to-r from-pink-500 to-[#d33f57] rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl">
+              <Plus />
+            </div>
+            <h2 className="text-xl font-bold mb-2">Создать пост</h2>
+            <p className="text-gray-600 mb-6">Поделитесь своим стилем с сообществом!</p>
+            <button className="w-full bg-[#d33f57] text-white py-3 rounded-xl font-medium hover:bg-[#b8354a] transition-colors">
+              Выбрать фото
+            </button>
+          </div>
+        );
 
-        {currentView === "profile" && (
+      case "cart":
+        return (
+          <div className="h-full overflow-y-auto">
+            <PaymentForm
+              orderTotal={`₸${calculateTotal().toLocaleString()}`}
+              cart={cart}
+              onBack={() => setCurrentView("feed")}
+              onPaymentSuccess={handlePaymentSuccess}
+              onRemoveFromCart={removeFromCart}
+            />
+          </div>
+        );
+
+      case "profile":
+        return (
           <div className="p-4 text-center">
             <div className="w-24 h-24 bg-gradient-to-r from-pink-500 to-[#d33f57] rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl">
               👤
@@ -1340,31 +1296,42 @@ const SocialCommerceApp = () => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        );
 
-      {currentView === "payment" && (
-        <PaymentForm
-          orderTotal={`₸${calculateTotal().toLocaleString()}`}
-          cart={cart}
-          onBack={() => setCurrentView("feed")}
-          onPaymentSuccess={handlePaymentSuccess}
-          onRemoveFromCart={removeFromCart}
-        />
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Layout
+      currentView={currentView}
+      onViewChange={handleViewChange}
+      cartCount={cart.length}
+      showBackButton={currentView === "cart"}
+      onBackClick={() => setCurrentView("feed")}
+    >
+      {renderCurrentView()}
+      {orderSuccess && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white mx-4 rounded-2xl p-8 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-green-600" />
+            </div>
+            <h2 className="text-xl font-bold mb-2">Заказ оформлен!</h2>
+            <p className="text-gray-600 mb-6">
+              Спасибо за покупку. Мы отправим уведомление о статусе заказа.
+            </p>
+            <button
+              onClick={() => setOrderSuccess(false)}
+              className="w-full bg-[#d33f57] text-white py-3 rounded-xl font-medium hover:bg-[#b8354a] transition-colors"
+            >
+              Продолжить покупки
+            </button>
+          </div>
+        </div>
       )}
-
-      {selectedPost && (
-        <ProductModal
-          post={selectedPost}
-          onClose={() => setSelectedPost(null)}
-          onAddToCart={addToCart}
-        />
-      )}
-
-      {orderSuccess && <SuccessModal onClose={() => setOrderSuccess(false)} />}
-
-      {currentView !== "payment" && <NavigationBar />}
-    </div>
+    </Layout>
   );
 };
 
